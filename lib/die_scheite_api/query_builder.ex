@@ -3,7 +3,8 @@ defmodule DieScheiteApi.QueryBuilder do
     [
       build_size(params),
       build_sort(params),
-      build_bool_query(params, Keyword.get(opts, :term_keys, []), Keyword.get(opts, :range_keys, []))
+      build_bool_query(params, Keyword.get(opts, :term_keys, []), Keyword.get(opts, :range_keys, [])),
+      build_aggregations(Map.get(params, Keyword.get(opts, :aggregations_key, "aggregations"), []))
     ] |> Enum.reduce(%{}, &Map.merge/2)
   end
 
@@ -18,6 +19,9 @@ defmodule DieScheiteApi.QueryBuilder do
 
   def build_sort(_),
     do: %{}
+
+  def build_aggregations(terms),
+    do: %{aggregations: Enum.reduce(terms, %{}, &Map.put(&2, &1, %{terms: %{field: &1}}))}
 
   def build_bool_query(params, term_keys, range_keys),
     do: %{

@@ -22,17 +22,19 @@ defmodule DieScheiteApiWeb.EntriesController do
     "http.response.statusCode",
   ]
 
+  @aggregations_key "aggs"
+
   @default_filter %{"sort_by" => "timestamp", "sort_order" => "desc", "size" => 10}
 
   def index(conn, params) do
     query = DieScheiteApi.QueryBuilder.build_query(
       Map.merge(@default_filter, params),
-      term_keys: @term_keys, range_keys: @range_keys
+      term_keys: @term_keys, range_keys: @range_keys, aggregations_key: @aggregations_key
     )
 
     case query |> post_query() |> parse_response() do
-      {:ok, entries} ->
-        conn |> put_status(:ok) |> json(%{entries: entries})
+      {:ok, entries, aggs} ->
+        conn |> put_status(:ok) |> json(%{entries: entries, aggs: aggs})
       {:error, error} ->
         Logger.error("Error #{inspect error} Query: #{inspect query}")
         conn |> put_status(:internal_server_error) |> json(%{errors: [error]})
@@ -68,7 +70,10 @@ defmodule DieScheiteApiWeb.EntriesController do
                   |> Map.get("hits")
                   |> Map.get("hits")
                   |> Enum.map(&Map.get(&1, "_source"))
-        {:ok, entries}
+        aggs = result
+               |> Map.get("aggregations")
+               |> Enum.map(fn {term, %{"buckets" => vals}} -> %{property: term, values: Enum.map(vals, &Map.get(&1, "key"))} end)
+        {:ok, entries, aggs}
       {:error, _} ->
         {:error, %{message: "Failed to parse response", code: "ERR_ELASTIC_PARSE_ERROR", data: body}}
     end
