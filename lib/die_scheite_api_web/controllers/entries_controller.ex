@@ -33,8 +33,8 @@ defmodule DieScheiteApiWeb.EntriesController do
     )
 
     case query |> post_query() |> parse_response() do
-      {:ok, entries, aggs} ->
-        conn |> put_status(:ok) |> json(%{entries: entries, aggs: aggs})
+      {:ok, entries, aggs, total} ->
+        conn |> put_status(:ok) |> json(%{entries: entries, aggs: aggs, total: total})
       {:error, error} ->
         Logger.error("Error #{inspect error} Query: #{inspect query}")
         conn |> put_status(:internal_server_error) |> json(%{errors: [error]})
@@ -73,7 +73,11 @@ defmodule DieScheiteApiWeb.EntriesController do
         aggs = result
                |> Map.get("aggregations")
                |> Enum.map(fn {term, %{"buckets" => vals}} -> %{property: term, values: Enum.map(vals, &Map.get(&1, "key"))} end)
-        {:ok, entries, aggs}
+        total = result
+                |> Map.get("hits")
+                |> Map.get("total")
+
+        {:ok, entries, aggs, total}
       {:error, _} ->
         {:error, %{message: "Failed to parse response", code: "ERR_ELASTIC_PARSE_ERROR", data: body}}
     end
