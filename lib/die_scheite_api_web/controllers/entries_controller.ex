@@ -12,6 +12,7 @@ defmodule DieScheiteApiWeb.EntriesController do
     "http.request.method",
     "http.request.uri",
     "http.request.host",
+    "http.response.statusCode",
   ]
 
   @range_keys [
