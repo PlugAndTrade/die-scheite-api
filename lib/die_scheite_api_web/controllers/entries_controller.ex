@@ -71,7 +71,7 @@ defmodule DieScheiteApiWeb.EntriesController do
                   |> Map.get("hits")
                   |> Enum.map(&Map.get(&1, "_source"))
         aggs = result
-               |> Map.get("aggregations")
+               |> Map.get("aggregations", [])
                |> Enum.map(fn {term, %{"buckets" => vals}} -> %{property: term, values: Enum.map(vals, &Map.get(&1, "key"))} end)
         total = result
                 |> Map.get("hits")
