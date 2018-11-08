@@ -3,16 +3,22 @@ defmodule DieScheiteApiWeb.EntriesController do
   require Logger
 
   @term_keys [
-    "serviceId",
-    "serviceInstanceId",
-    "servcieVersion",
     "id",
     "parentId",
     "correlationId",
+    "serviceId",
+    "serviceInstanceId",
+    "servcieVersion",
+    "route",
+    "protocol",
+    "level",
     "http.request.method",
     "http.request.uri",
     "http.request.host",
     "http.response.statusCode",
+    "rabbitmq.queueName",
+    "rabbitmq.acked",
+    "rabbitmq.messageId"
   ]
 
   @range_keys [
