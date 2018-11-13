@@ -38,4 +38,5 @@ config :phoenix, :stacktrace_depth, 20
 
 config :die_scheite_api, :elastic,
   url: "http://localhost:9200",
-  index: "logentries-*"
+  index: "logentries-*",
+  attachment_index: "logentry-attachments-*"
