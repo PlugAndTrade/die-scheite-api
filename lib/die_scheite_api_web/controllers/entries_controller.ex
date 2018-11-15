@@ -12,6 +12,7 @@ defmodule DieScheiteApiWeb.EntriesController do
     "route",
     "protocol",
     "level",
+    "levelCategory",
     "http.request.method",
     "http.request.uri",
     "http.request.host",
