@@ -24,7 +24,7 @@ FROM alpine
 ENV APP_NAME die_scheite_api
 ENV SRC_DIR /src/$APP_NAME
 
-RUN apk add --no-cache ncurses-libs libcrypto1.0 bash
+RUN apk add --no-cache ncurses-libs libcrypto1.0 bash tzdata
 
 RUN mkdir -p /$APP_NAME /tmp
 WORKDIR /$APP_NAME
