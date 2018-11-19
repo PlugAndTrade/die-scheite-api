@@ -21,7 +21,7 @@ defmodule DieScheiteApi.QueryBuilder do
     do: %{}
 
   def build_aggregations(terms),
-    do: %{aggregations: Enum.reduce(terms, %{}, &Map.put(&2, &1, %{terms: %{field: &1}}))}
+    do: %{aggregations: Enum.reduce(terms, %{}, &Map.put(&2, &1, %{terms: %{field: &1, size: 100}}))}
 
   def build_bool_query(params, term_keys, range_keys),
     do: %{
