@@ -9,8 +9,8 @@ defmodule DieScheiteApiWeb.AttachmentsController do
          {:ok, data} <- attachment |> Map.get("data") |> Base.decode64() do
       conn
       |> put_status(:ok)
-      |> put_resp_header("Content-Type", Map.get(attachment, "contentType", ""))
-      |> put_resp_header("Content-Encoding", Map.get(attachment, "contentEncoding", ""))
+      |> set_attachment_header(:content_type, attachment)
+      |> set_attachment_header(:content_encoding, attachment)
       |> text(data)
     else
       {:error, error} ->
@@ -21,6 +21,12 @@ defmodule DieScheiteApiWeb.AttachmentsController do
         conn |> put_status(:internal_server_error) |> json(%{errors: [%{message: "Unknown error", code: "ERR_UNKNOWN"}]})
     end
   end
+
+  defp set_attachment_header(conn, :content_type, %{"contentType" => type}) when not is_nil(type), do: put_resp_header(conn, "content-type", type)
+  defp set_attachment_header(conn, :content_type, _), do: conn
+
+  defp set_attachment_header(conn, :content_encoding, %{"contentEncoding" => enc}) when not is_nil(enc), do: put_resp_header(conn, "content-encoding", enc)
+  defp set_attachment_header(conn, :content_encoding, _), do: conn
 
   def post_query(query) do
     opts = Application.get_env(:die_scheite_api, :elastic)
