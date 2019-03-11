@@ -62,5 +62,5 @@ config :logger, level: :info
 
 config :die_scheite_api, :elastic,
   url: "${ELASTIC_URL}",
-  index: "logentries-*",
+  template: "diescheite",
   attachment_index: "logentry-attachments-*"

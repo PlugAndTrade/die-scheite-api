@@ -3,8 +3,13 @@ defmodule DieScheiteApi.ElasticClient do
     HTTPoison.post(
       "#{url}/#{index}/_search",
       Poison.encode!(query),
-      ["Content-Type": "application/json"]
+      ["Content-Type": "application/json"],
+      [recv_timeout: 50_000]
     )
+  end
+
+  def get_template(url, name) do
+    HTTPoison.get("#{url}/_template/#{name}")
   end
 
   def parse_response({:error, %HTTPoison.Error{reason: :econnrefused}}),
@@ -21,6 +26,15 @@ defmodule DieScheiteApi.ElasticClient do
 
   def parse_response({:ok, %HTTPoison.Response{body: body}}) do
     case Poison.decode(body) do
+      {:ok, data} ->
+        {:ok, data}
+      {:error, _} ->
+        {:error, %{message: "Failed to parse response", code: "ERR_ELASTIC_PARSE_ERROR", data: body}}
+    end
+  end
+
+  def parse_query_response(res) do
+    case parse_response(res) do
       {:ok, result} ->
         hits = result
                   |> Map.get("hits")
@@ -34,8 +48,7 @@ defmodule DieScheiteApi.ElasticClient do
                 |> Map.get("total")
 
         {:ok, hits, aggs, total}
-      {:error, _} ->
-        {:error, %{message: "Failed to parse response", code: "ERR_ELASTIC_PARSE_ERROR", data: body}}
+      err -> err
     end
   end
 end

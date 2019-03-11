@@ -37,6 +37,7 @@ defmodule DieScheiteApi.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:distillery, "~> 2.0.9", runtime: false},
+      {:esjql, git: "https://github.com/DrunkenInfant/esjql.git", tag: "0.1.0"},
       {:httpoison, "~> 1.3.0"},
       {:phoenix, "~> 1.3.2"},
       {:phoenix_pubsub, "~> 1.0"},

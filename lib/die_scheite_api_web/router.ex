@@ -9,6 +9,7 @@ defmodule DieScheiteApiWeb.Router do
     pipe_through :api
 
     get "/entries", EntriesController, :index
+    get "/logentries", EntriesController, :index
     get "/attachments/:id", AttachmentsController, :get
   end
 end

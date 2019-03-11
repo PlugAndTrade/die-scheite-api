@@ -33,6 +33,6 @@ defmodule DieScheiteApiWeb.AttachmentsController do
     DieScheiteApi.ElasticClient.post_query(opts[:url], opts[:attachment_index], query)
   end
 
-  def parse_response(response), do: DieScheiteApi.ElasticClient.parse_response(response)
+  def parse_response(response), do: DieScheiteApi.ElasticClient.parse_query_response(response)
 end
 

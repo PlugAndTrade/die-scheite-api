@@ -15,8 +15,8 @@ config :die_scheite_api, DieScheiteApiWeb.Endpoint,
 
 # Configures Elixir's Logger
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:user_id]
+  format: "$time [$level] $message\n",
+  metadata: []
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
