@@ -10,6 +10,7 @@ defmodule DieScheiteApiWeb.Router do
 
     get "/entries", EntriesController, :index
     get "/logentries", EntriesController, :index
+    get "/logentries/properties", EntriesController, :properties
     get "/attachments/:id", AttachmentsController, :get
   end
 end
