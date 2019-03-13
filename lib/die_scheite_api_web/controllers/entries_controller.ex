@@ -42,8 +42,8 @@ defmodule DieScheiteApiWeb.EntriesController do
 
   def properties(conn, params) do
     case get_template() do
-      {:ok, {%{"properties" => mappings}, _}} ->
-        props = mappings |> Enum.map(fn ({name, %{"type" => type}}) -> %{name: name, type: type} end)
+      {:ok, {mappings, _}} ->
+        props = Esjql.flatten_properties(mappings)
         conn |> put_status(:ok) |> json(%{"properties" => props})
       {:error, errors} when is_list(errors)->
         Logger.error("Errors #{inspect errors}")
