@@ -7,7 +7,7 @@ pipeline {
     GIT_COMMIT_SHORT = "${sh(returnStdout: true, script: 'git rev-parse --short HEAD')}"
   }
   agent {
-    label 'docker && linux'
+    label 'docker'
   }
   stages {
     stage('Build') {
