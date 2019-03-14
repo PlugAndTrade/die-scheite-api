@@ -36,19 +36,21 @@ defmodule DieScheiteApi.ElasticClient do
   def parse_query_response(res) do
     case parse_response(res) do
       {:ok, result} ->
-        hits = result
-                  |> Map.get("hits")
-                  |> Map.get("hits")
-                  |> Enum.map(&Map.get(&1, "_source"))
-        aggs = result
-               |> Map.get("aggregations", [])
-               |> Enum.map(fn {term, %{"buckets" => vals}} -> %{property: term, values: Enum.map(vals, &Map.get(&1, "key"))} end)
-        total = result
-                |> Map.get("hits")
-                |> Map.get("total")
-
-        {:ok, hits, aggs, total}
+        {hits, total} = parse_resultset(result)
+        {:ok, hits, total}
       err -> err
     end
+  end
+
+  def parse_resultset(result) do
+      hits = result
+                |> Map.get("hits")
+                |> Map.get("hits")
+                |> Enum.map(&Map.get(&1, "_source"))
+      total = result
+              |> Map.get("hits")
+              |> Map.get("total")
+
+      {hits, total}
   end
 end

@@ -8,7 +8,4 @@ defmodule DieScheiteApi.QueryBuilder do
     do: %{sort: [sort_by]}
   def build_sort(_),
     do: %{}
-
-  def build_aggregations(terms),
-    do: %{aggregations: Enum.reduce(terms, %{}, &Map.put(&2, &1, %{terms: %{field: &1, size: 100}}))}
 end

@@ -4,20 +4,20 @@ defmodule DieScheiteApiWeb.EntriesController do
 
   @default_options %{"_sort_by" => "timestamp", "_sort_order" => "desc", "_size" => 10}
 
-  @es_query_options %{
-    "_size" => "size",
-    "_sort_by" => "sort_by",
-    "_sort_order" => "sort_order",
-    "_debug" => nil,
-    "_aggs" => nil
-  }
+  @es_query_options [
+    "_size",
+    "_sort_by",
+    "_sort_order",
+    "_debug",
+    "_aggs"
+  ]
 
   def index(conn, params) do
     opts = Application.get_env(:die_scheite_api, :elastic)
 
     with {:ok, {mappings, index}} <- get_template(),
-         {:ok, filter} <- build_filters(mappings, Map.drop(params, Map.keys(@es_query_options))),
-         aggregations <- DieScheiteApi.QueryBuilder.build_aggregations(Map.get(params, "_aggs", [])),
+         {:ok, filter} <- build_filters(mappings, Map.drop(params, @es_query_options)),
+         {:ok, aggregations} <- build_aggregations(mappings, Map.get(params, "_aggs", [])),
          query_options <- build_options(params),
          query <- Enum.reduce([filter, aggregations, query_options], %{}, &Map.merge/2),
          {:ok, entries, aggs, total} <- post_query(query, opts[:url], index) do
@@ -40,7 +40,7 @@ defmodule DieScheiteApiWeb.EntriesController do
     end
   end
 
-  def properties(conn, params) do
+  def properties(conn, _params) do
     case get_template() do
       {:ok, {mappings, _}} ->
         props = Esjql.flatten_properties(mappings)
@@ -77,15 +77,25 @@ defmodule DieScheiteApiWeb.EntriesController do
     end
   end
 
+  def build_aggregations(mappings, properties) do
+    case Esjql.Aggregation.build(mappings, properties, 50) do
+      {:error, errors} -> {:error, Enum.map(errors, &Map.put(%{code: "ERR_AGGS"}, :message, &1))}
+      res -> res
+    end
+  end
+
   def build_options(params) do
     params = Map.merge(@default_options, params)
     Map.merge(DieScheiteApi.QueryBuilder.build_sort(params), DieScheiteApi.QueryBuilder.build_size(params))
   end
 
   def post_query(query, url, index) do
-    case DieScheiteApi.ElasticClient.post_query(url, index, query) |> DieScheiteApi.ElasticClient.parse_query_response() do
+    case DieScheiteApi.ElasticClient.post_query(url, index, query) |> DieScheiteApi.ElasticClient.parse_response() do
       {:error, err} -> {:error, Map.put(err, :query, query)}
-      result -> result
+      {:ok, response} ->
+        {hits, total} = DieScheiteApi.ElasticClient.parse_resultset(response)
+        aggs = Esjql.Aggregation.parse(response)
+        {:ok, hits, aggs, total}
     end
   end
 end
