@@ -5,7 +5,7 @@ defmodule DieScheiteApiWeb.AttachmentsController do
   def get(conn, %{"id" => id}) do
     query = %{size: 1, query: %{bool: %{filter: [%{term: %{id: id}}]}}}
 
-    with {:ok, [attachment], _, _} <- query |> post_query() |> parse_response(),
+    with {:ok, [attachment], _} <- query |> post_query() |> parse_response(),
          {:ok, data} <- attachment |> Map.get("data") |> Base.decode64() do
       conn
       |> put_status(:ok)
@@ -33,6 +33,6 @@ defmodule DieScheiteApiWeb.AttachmentsController do
     DieScheiteApi.ElasticClient.post_query(opts[:url], opts[:attachment_index], query)
   end
 
-  def parse_response(response), do: DieScheiteApi.ElasticClient.parse_response(response)
+  def parse_response(response), do: DieScheiteApi.ElasticClient.parse_query_response(response)
 end
 

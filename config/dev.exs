@@ -37,6 +37,6 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :die_scheite_api, :elastic,
-  url: "http://localhost:9500",
-  index: "logentries-*",
+  url: "http://localhost:9300",
+  template: "diescheite",
   attachment_index: "logentry-attachments-*"
