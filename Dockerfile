@@ -19,7 +19,7 @@ ADD . $SRC_DIR/
 RUN MIX_ENV=prod mix compile --env=prod
 RUN MIX_ENV=prod mix release --env=prod
 
-FROM alpine
+FROM alpine:3.8
 
 ENV APP_NAME die_scheite_api
 ENV SRC_DIR /src/$APP_NAME
