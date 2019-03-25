@@ -1,0 +1,20 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build docker image
+  entrypoint: '/bin/bash'
+  args:
+  - '-c'
+  - 'docker build $(for t in latest $TAG_NAME $BRANCH_NAME; do echo "-t $$IMAGE_PATH:$(echo $t | sed s%/%-%)"; done) -f $_DOCKER_FILE .'
+  env:
+  - 'IMAGE_PATH=gcr.io/$PROJECT_ID/$_IMAGE_NAME'
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push docker image
+  entrypoint: '/bin/bash'
+  args:
+  - '-c'
+  - 'for t in latest $TAG_NAME $BRANCH_NAME; do docker push "$$IMAGE_PATH:$(echo $t | sed s%/%-%)"; done'
+  env:
+  - 'IMAGE_PATH=gcr.io/$PROJECT_ID/$_IMAGE_NAME'
+substitutions:
+  _DOCKER_FILE: 'Dockerfile'
+  _IMAGE_NAME: '$REPO_NAME'

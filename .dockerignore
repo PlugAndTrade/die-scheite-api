@@ -1,0 +1,7 @@
+.git
+deps
+_build
+deploy
+Dockerfile
+.dockerignore
+cloudbuild.yaml
