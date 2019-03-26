@@ -1,4 +1,4 @@
-FROM elixir:1.6-alpine
+FROM elixir:1.8.1-alpine
 
 ENV APP_NAME die_scheite_api
 ENV SRC_DIR /src/$APP_NAME
@@ -19,12 +19,12 @@ ADD . $SRC_DIR/
 RUN MIX_ENV=prod mix compile --env=prod
 RUN MIX_ENV=prod mix release --env=prod
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 ENV APP_NAME die_scheite_api
 ENV SRC_DIR /src/$APP_NAME
 
-RUN apk add --no-cache ncurses-libs libcrypto1.0 bash tzdata
+RUN apk add --no-cache ncurses-libs libcrypto1.1 bash tzdata
 
 RUN mkdir -p /$APP_NAME /tmp
 WORKDIR /$APP_NAME
